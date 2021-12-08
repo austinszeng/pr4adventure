@@ -46,9 +46,10 @@ class Room:
 class Store(Room):
     def __init__(self, description, acquisition):
         Room.__init__(self, description)
-        self.acquisition = acquisition
+        r = round(random.randint(acquisition - acquisition/4, acquisition + acquisition/4), 2)
+        self.acquisition = r
     def displayItems(self):
-        print(self.desc + "'s Merchandise:")
+        print("You can buy the following items:")
         for i in self.items:
             print(i.name + " ($" + str(i.price) + ")")
         print()

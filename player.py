@@ -1,7 +1,7 @@
 import os, random
 from person import *
 from item import *
-from world import *
+from misc import *
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -12,7 +12,6 @@ class Player:
         self.items = []
         self.alive = True
         self.engaged = False
-        self.scared = False
         self.engagedWith = []
         self.maxHealth = health
         self.health = health
@@ -29,6 +28,7 @@ class Player:
         # self.disguised = False
         self.maxInv = 5
         self.currInv = 0
+        self.acquisitions = 0
     def goDirection(self, direction):
         self.location = self.location.getDestination(direction)
     def pickup(self, item):
@@ -46,6 +46,25 @@ class Player:
             self.pickup(item)
             self.money -= item.price
             print("You bought " + item.name + "!")
+        else:
+            print("Not enough money.")
+        print()
+        input("Press enter to continue...")
+    def acquire(self, store):
+        clear()
+        if self.money >= store.acquisition:
+            if store.hasPersons():
+                for person in store.persons:
+                    if type(person) == Merchant:
+                        # drop all of merchant's items so that its pickupable
+                        for i in person.items:
+                            i.putInRoom(self.location)
+                            person.items.remove(i)
+                        # remove merchant from game
+                        store.removePerson(person)
+            self.money -= store.acquisition
+            self.acquisitions += 1
+            print("You acquired " + store.desc + "for $" + str(store.acquisition) + "!")
         else:
             print("Not enough money.")
         print()
@@ -108,6 +127,11 @@ class Player:
     def losingScreen(self):
         print("Final stats:")
         # show acquisitions and money and equipment and stats
+    def winningScreen(self):
+        print("You acquired all of the stores and beat the game!")
+        print("You now rule over the city!")
+        print()
+        self.losingScreen()
     def die(self):
         print("You died.")
         print()
@@ -118,6 +142,11 @@ class Player:
         print()
         self.losingScreen()
         self.alive = False
+    def win(self):
+        print("You won!")
+        print()
+        self.winningScreen()
+        self.alive = False
     def attack(self, person):
         variability = 5
         dmg = random.randint(self.damage - variability, self.damage + variability) 
@@ -126,7 +155,6 @@ class Player:
             person.health -= dmg
         else:
             person.die()
-
     def attackPerson(self, person):
         self.engaged = True
         if person not in self.engagedWith:
@@ -156,18 +184,26 @@ class Player:
         # successful --> steal an item from them
         if random.uniform(0.0,1.0) + ((self.cunning/100)/2) > person.attentive and person.engaged == False:
             # random chance to either steal an item or take their money
-            # if no money cuz already pickpocketed, then get $0
+            n = random.randint(1,4)
             if person.items != [] and self.currInv < self.maxInv:
-                item = random.choice(person.items)
-                person.items.remove(item)
-                self.items.append(item)
-                item.loc = self
-                self.currInv += 1
-                print("You have pickpocketed a " + item.name + " from " + person.name + "!")
+                if n != 4:
+                    item = random.choice(person.items)
+                    person.items.remove(item)
+                    self.items.append(item)
+                    item.loc = self
+                    self.currInv += 1
+                    print("You pickpocketed " + item.name + " from " + person.name + "!")
+                else:
+                    if person.money != 0:
+                        print("You took $" + str(person.money) + " from " + person.name + "!")
+                        person.money = 0
+                    # if no money cuz already pickpocketed, then get $0
+                    else:
+                        print("You already took " + person.name + "'s money.")
             elif self.currInv >= self.maxInv:
                 print("Your backpack is full...")
             else:
-                print("This person has nothing...")
+                print(person.name + " has nothing...")
             # successful pickpocket regardless of if they have nothing or if backpack full increases cunning
             r = random.randint(3,6)
             self.cunning += r
@@ -175,7 +211,9 @@ class Player:
             
         else:
             print(person.name + " noticed!")
+            print()
             person.engaged = True
+            person.scared = False
             if person not in self.engagedWith:
                 self.engagedWith.append(person)
             # fighting ensues
@@ -190,12 +228,15 @@ class Player:
                         print(person.name + " tries to attack you but you dodge them.")
                     else:
                         person.attack(self)
-            # person is scared
+            # person is scared, an enforcer is added to the map
             else:
-                self.scared = True
+                person.scared = True
+                person.engaged = False
+                print(person.name + " is scared and calls an enforcer to the city.")
                 # add an extra enforcer on the map that is constantly engaged
-                randomRoom = random.choice(allRooms)
-                Enforcer("Minion", randomRoom, [])
+                enforcer = random.choice(allEnforcers)
+                enforcer.room.addPerson(enforcer)
+                enforcer.onMap = True
         print()
         input("Press enter to continue...")
 
@@ -222,7 +263,7 @@ class Player:
             print("You put on " + item.name + " (+" + str(item.damage) + " DMG)")
         # elif type(item) == Disguise and self.disguise == None:
         #     self.disguise = item
-        #     self.currInv += 1
+        #     self.currInv -= 1
         #     self.disguised = True
         #     self.items.remove(item)
         #     print("You put on " + item.name + " and are now disguised.")
@@ -255,7 +296,7 @@ class Player:
                 print("You took off " + item.name + " (-" + str(item.damage) + " DMG)")
             # elif type(item) == Disguise and self.disguise != None:
             #     self.disguise = None
-            #     self.currInv -= 1
+            #     self.currInv += 1
             #     self.disguised = False
             #     self.items.append(item)
             #     print("You took off " + item.name + " and are now undisguised.")

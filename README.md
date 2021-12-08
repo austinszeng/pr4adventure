@@ -1,7 +1,7 @@
 # Blah Blah
 ## Blah Blah is a game where you are a bandit roaming the streets and pickpocket items/ money from people or stores and sell these stolen goods to stores to make money to buy items and acquire stores. To win the game, acquire all the stores. However, each time you pickpocket, there comes a risk of being seen or caught. You may have to deal with the police and/ or being attacked. 
 
-# Improvements/ Changes (Current: 37 points):
+# Improvements/ Changes (Current: 40 points):
 ## "me" command (2 points)
 - Added showStats method in Player to show current status
 ## "inspect" command (2 points)
@@ -41,15 +41,13 @@
 - food
 ## introducing monsters during play (2 points)
 - enforcer
-
-
 ## victory condition (3 points)
-- acquire all stores ( this will be the final implementation)
+- acquire all 4 stores (this will be the final implementation)
 
 ## Bugs:
 - run is probably still buggy if the direction is spelled wrong
 - make it so you can't pickup in a store room unless they're items dropped by players?
-- line 196 in player is wrong, need to add items to it ya know
+- stealing an item from a merchant doesn't remove it from shop
 
 ## Ideas:
 - having a disguise on makes it easier to run away
@@ -64,3 +62,4 @@
 - add variability on price
 - once you acquire a shop, eveyrthing in it is yours and you can't buy/ sell from it anymore?
 - Show item attributes while in inventory 
+- randomly put stores in store locations

@@ -13,6 +13,7 @@ class Person:
         self.speed = random.randint(30,60)
         self.anger = random.uniform(0.25, 0.75)
         self.engaged = False
+        self.scared = False
         self.room = room
         room.addPerson(self)
         self.items = items
@@ -43,14 +44,28 @@ class Person:
             player.die()
 
 class Enforcer(Person):
+    # needed to change whole init so room doesn't automatically addPerson
     def __init__(self, name, room, items):
-        Person.__init__(self, name, room, items)
-        self.engaged = True
-        self.health = random.randint(125,250)
+        self.name = name
+        self.alive = True
+        r = random.randint(125,250)
+        self.health = r
+        self.maxHealth = r
         self.attentive = random.uniform(0.4,0.8)
         self.damage = random.randint(20,50)
         self.speed = random.randint(50,80)
         self.cunning = random.randint(5,15) # additional attribute
+        self.anger = random.uniform(0.25, 0.75)
+        self.room = room
+        self.items = items
+        self.money = random.randint(1,50)
+        self.engaged = True
+        self.onMap = False
+        updater.register(self)
+
+    def update(self):
+        if self.onMap and random.random() < .5:
+                self.moveTo(self.room.randomNeighbor())
 
 class Merchant(Person):
     def __init__(self, name, room, items):

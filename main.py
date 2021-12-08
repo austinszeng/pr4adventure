@@ -1,5 +1,4 @@
 from room import Room, Store
-from player import Player
 from item import *
 from person import *
 from world import *
@@ -11,7 +10,10 @@ def clear():
 
 def printSituation():
     clear()
-    print("You (" + str(player.health) + "/" + str(player.maxHealth) + ") are in " + player.location.desc + ".")
+    if type(player.location) == Store:
+        print("You (" + str(player.health) + "/" + str(player.maxHealth) + ") are in " + player.location.desc + " ($" + str(player.location.acquisition) + ")" + ".")
+    else:
+        print("You (" + str(player.health) + "/" + str(player.maxHealth) + ") are in " + player.location.desc + ".")
     print()
     if player.location.hasPersons():
         print("This room contains the following persons:")
@@ -47,6 +49,7 @@ def showHelp():
     print("unequip <item> -- unequip equipped item")
     print("run <direction> -- if engaged")
     print("buy <item> -- buy item from store")
+    print("acquire -- buy store")
     print("sell <item> -- sell item to store")
     print("wait -- wait a turn in same location")
     print("eat <item> -- eat a eatable item to gain health")
@@ -72,6 +75,8 @@ clear()
 createWorld(player)
 playing = True
 while playing and player.alive:
+    if player.acquisitions == 4:
+        player.win()
     printSituation()
     commandSuccess = False
     timePasses = False
@@ -132,6 +137,12 @@ while playing and player.alive:
                 commandSuccess = False
             else:
                 print("No such item.")
+                commandSuccess = False
+        elif commandWords[0].lower() == "acquire":
+            if type(target.loc) == Store:
+                player.acquire()
+            else:
+                print("This is not a store.")
                 commandSuccess = False
         elif commandWords[0].lower() == "sell":
             targetName = command[5:]
