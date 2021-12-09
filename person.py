@@ -65,7 +65,7 @@ class Enforcer(Person):
 
     def update(self):
         if self.onMap and random.random() < .5:
-                self.moveTo(self.room.randomNeighbor())
+            self.moveTo(self.room.randomNeighbor())
 
 class Merchant(Person):
     def __init__(self, name, room, items):
@@ -73,8 +73,9 @@ class Merchant(Person):
         self.attentive = random.uniform(0.25,0.5)
         for i in items:
             i.putInRoom(self.room) # put in room so items can be displayed
-            i.loc = self # make location the merchant
+        self.items = []
     def sell(self, item):
-        self.items.remove(item)
+        self.room.items.remove(item)
     def update(self):
-        pass # don't move from shop
+        # don't move from shop
+        pass

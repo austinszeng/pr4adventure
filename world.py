@@ -38,6 +38,7 @@ def createWorld(player):
 
     i0 = Item("Rock", "This is just a rock.", 0)
     i0.putInRoom(a)
+    i0.putInRoom(a)
     player.location = a
 
     # For testing
@@ -60,14 +61,14 @@ def createWorld(player):
 
     storeRooms = [f,i,j,l]
     r = random.choice(storeRooms)
-    Merchant("Clark", r, random.sample(merchant_items, random.randint(3,6)))
+    Merchant("Clark", r, random.sample(merchant_items, random.randint(4,6)))
     storeRooms.remove(r)
     r = random.choice(storeRooms)
-    Merchant("Clerk", r, random.sample(merchant_items, random.randint(3,6)))
+    Merchant("Clerk", r, random.sample(merchant_items, random.randint(4,6)))
     storeRooms.remove(r)
     r = random.choice(storeRooms)
-    Merchant("Cassy", r, random.sample(merchant_items, random.randint(3,6)))
+    Merchant("Cassy", r, random.sample(merchant_items, random.randint(4,6)))
     storeRooms.remove(r)
     r = random.choice(storeRooms)
-    Merchant("Cuphead", r, random.sample(merchant_items, random.randint(3,6)))
+    Merchant("Cuphead", r, random.sample(merchant_items, random.randint(4,6)))
     storeRooms.remove(r)

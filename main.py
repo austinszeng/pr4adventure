@@ -11,25 +11,39 @@ def clear():
 def printSituation():
     clear()
     if type(player.location) == Store:
-        print("You (" + str(player.health) + "/" + str(player.maxHealth) + ") are in " + player.location.desc + " ($" + str(player.location.acquisition) + ")" + ".")
+        if player.location.acquired == False:
+            print("You (" + str(player.health) + "/" + str(player.maxHealth) + ") are in " + player.location.desc + " ($" + str(player.location.acquisition) + ")" + ".")
+        else:
+            print("You (" + str(player.health) + "/" + str(player.maxHealth) + ") are in " + player.location.desc + ".")
     else:
         print("You (" + str(player.health) + "/" + str(player.maxHealth) + ") are in " + player.location.desc + ".")
     print()
     if player.location.hasPersons():
         print("This room contains the following persons:")
         for m in player.location.persons:
+            s = m.name + " (" + str(m.health) + "/" + str(m.maxHealth) + ")"
+            if type(m) == Merchant:
+                s += " (Merchant)"
             if m.engaged:
-                print(m.name + " (" + str(m.health) + "/" + str(m.maxHealth) + ") (engaged)")
+                s += " (engaged)"
             elif m.scared:
-                print(m.name + " (" + str(m.health) + "/" + str(m.maxHealth) + ") (scared)")
-            else:
-                print(m.name + " (" + str(m.health) + "/" + str(m.maxHealth) + ")")
+                s += " (scared)"
+        print(s)
         print()
     if player.location.hasItems():
         if type(player.location) == Room:
             print("This room contains the following items:")
-            for i in player.location.items:
-                print(i.name)
+            numOccurences = {}
+            for item in player.location.items:
+                if item in numOccurences:
+                    numOccurences[item] += 1
+                else:
+                    numOccurences[item] = 1
+            for item in numOccurences:
+                if numOccurences[item] > 1:
+                    print(item.name + " (x" + str(numOccurences[item]) + ")")
+                else:
+                    print(item.name)
             print()
         elif type(player.location) == Store:
             player.location.displayItems()
@@ -85,19 +99,62 @@ while playing and player.alive:
         command = input("What now? ")
         commandWords = command.split()
         if commandWords[0].lower() == "go":   #cannot handle multi-word directions
-            if player.engaged == True:
-                print("You can not do that right now.")
-                commandSuccess = False
+            if player.location.hasPersons():
+                # find mad persons in room
+                important = []
+                for i in player.location.persons:
+                    if i in player.engagedWith:
+                        important.append(i)
+                # check if enforcer is in room
+                hasEnforcer = False
+                if important != []:
+                    for person in important:
+                        if type(person) == Enforcer:
+                            hasEnforcer = True
+                            break
+                if hasEnforcer == True:
+                    # disguise is used up if you pass an enforcer
+                    if player.disguise != None:
+                        clear()
+                        print("You walk past enforcer " + person.name + " but your " \
+                            + player.disguise.name + " is gone now.")
+                        print()
+                        input("Press enter to continue...")
+                        player.disguise = None
+                        player.goDirection(commandWords[1])
+                        timePasses = True
+                    # if no disguise
+                    else:
+                        print("You can not do that right now.")
+                        commandSuccess = False
+                elif hasEnforcer == False:
+                    if important == []:
+                        player.goDirection(commandWords[1])
+                        timePasses = True
+                    else:
+                        # disguise protects against normal people
+                        if player.disguise == True:
+                            player.goDirection(commandWords[1])
+                            timePasses = True
+                        else:
+                            print("You can not do that right now.")
+                            commandSuccess = False
             else:
-                player.goDirection(commandWords[1]) 
+                player.goDirection(commandWords[1])
                 timePasses = True
+
         elif commandWords[0].lower() == "pickup":  #can handle multi-word objects
             targetName = command[7:]
             target = player.location.getItemByName(targetName)
             if target != False and player.currInv < player.maxInv:
-                if type(target.loc) == Merchant:
-                    print("You have to buy this item.")
-                    commandSuccess = False
+                if type(target.loc) == Store:
+                    if target.loc.acquired == False:
+                        print("You have to buy this item.")
+                        commandSuccess = False
+                    # if store is acquired, you can pick up
+                    else:
+                        player.pickup(target)
+                        player.currInv += 1
                 else:
                     player.pickup(target)
                     player.currInv += 1
@@ -126,20 +183,26 @@ while playing and player.alive:
         elif commandWords[0].lower() == "buy":
             targetName = command[4:]
             target = player.location.getItemByName(targetName)
-            if type(target.loc) == Room or type(target.loc) == Store:
-                print("You don't need to buy this item.")
-                commandSuccess = False
-            elif target != False and player.currInv < player.maxInv:
-                player.buy(target)
-                player.currInv += 1
-            elif player.currInv >= player.maxInv:
-                print("Backpack full.")
-                commandSuccess = False
+            if target != False:
+                if type(target.loc) == Room:
+                    print("You don't need to buy this item.")
+                    commandSuccess = False
+                else:
+                    if player.currInv < player.maxInv:
+                        if target.loc.acquired == True:
+                            print("You don't need to buy this item.")
+                            commandSuccess = False
+                        else:
+                            player.buy(target)
+                            player.currInv += 1
+                    elif player.currInv >= player.maxInv:
+                        print("Backpack full.")
+                        commandSuccess = False
             else:
                 print("No such item.")
                 commandSuccess = False
         elif commandWords[0].lower() == "acquire":
-            if type(target.loc) == Store:
+            if type(player.location) == Store:
                 player.acquire()
             else:
                 print("This is not a store.")
@@ -148,8 +211,16 @@ while playing and player.alive:
             targetName = command[5:]
             target = player.getItemByName(targetName)
             if target != False:
-                player.sell(target)
-                player.currInv -= 1
+                if type(target.loc) == Room:
+                    print("This room is not a store.")
+                    commandSuccess = False
+                else:
+                    if player.location.acquired == False:
+                        player.sell(target)
+                        player.currInv -= 1
+                    else:
+                        print("You can't sell items to your own store.")
+                        commandSuccess = False
             else:
                 print("No such item in inventory.")
                 commandSuccess = False
@@ -206,7 +277,7 @@ while playing and player.alive:
                 print("No such item equipped.")
                 commandSuccess = False
         elif commandWords[0].lower() == "run":
-            if player.engaged == True:
+            if player.location.hasPersons():
                 # find persons in room
                 important = []
                 for i in player.location.persons:
@@ -218,20 +289,29 @@ while playing and player.alive:
                     if person.speed > max:
                         max = person.speed
                         p = person
-                if player.speed > p.speed:
-                    clear()
-                    print("You have successfully run away!")
-                    print()
-                    input("Press enter to continue...")
-                    player.goDirection(commandWords[1]) 
-                    # player.engaged = False
+                # if there are persons in room that are mad at you
+                if important != []:
+                    if player.disguise != None:
+                        print("You have a disguise on, you don't need to run.")
+                        commandSuccess = False
+                    # if no disguise, try running
+                    else:
+                        if player.speed > p.speed:
+                            clear()
+                            print("You have successfully run away!")
+                            print()
+                            input("Press enter to continue...")
+                            player.goDirection(commandWords[1]) 
+                            timePasses = True
+                        else: 
+                            clear()
+                            print("You can not run away...")
+                            print()
+                            input("Press enter to continue...")
+                            commandSuccess = False
+                else:
+                    player.goDirection(commandWords[1])
                     timePasses = True
-                else: 
-                    clear()
-                    print("You can not run away...")
-                    print()
-                    input("Press enter to continue...")
-                    commandSuccess = False
             # same as "go (direction)"
             else:
                 player.goDirection(commandWords[1])

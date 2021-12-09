@@ -45,21 +45,28 @@
 - acquire all 4 stores (this will be the final implementation)
 
 ## Bugs:
+- make it so you can't pickup, drop, buy, sell when there's an engaged person in the room
+- merchant's still move around?
+- is player.engaged even used?
+- change so "run" takes into account disguise and tells player to not run if disguise on
+- test "go" with disguise mechanics
 - run is probably still buggy if the direction is spelled wrong
 - make it so you can't pickup in a store room unless they're items dropped by players?
 - stealing an item from a merchant doesn't remove it from shop
 
 ## Ideas:
+- redo how attacking works since player can't dodge rn and also maybe add for the possibility of the enemy to dodge too
+- still need to add disguise mechanics sigh
 - having a disguise on makes it easier to run away
 - disguise is useless if person catches you and is discarded; however, if put on a disguise, you can run away but your disguise is discarded. If no disguise, then need to wait like 5 turns for them to not be engaged anymore
 - alternative commands (1 point): maybe 3 points if make it abbreviate in a consistent clean way?
 - if person is still engaged and you run into them again, youre back engagedWith them unless you have on a disguise
 - if in the room with someone who's engaged then you're also engaged
 - implement something so it shows the amount of damage you increase if you equip a weapon based on your current damage if no wepDamage, else do it based on wepDamage
-- make store bought items a new class for weapons, disguises, equipment,...
 - display stats increased from inventory 
 - maybe make the mechanic of disguise just avoiding them for a few turns then they'll lose you
-- add variability on price
 - once you acquire a shop, eveyrthing in it is yours and you can't buy/ sell from it anymore?
 - Show item attributes while in inventory 
 - randomly put stores in store locations
+- make an exit message like keith
+- dropping an item in a store gives it back to the store and you have to buy it again

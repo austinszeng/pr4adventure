@@ -11,7 +11,6 @@ class Player:
         self.location = None
         self.items = []
         self.alive = True
-        self.engaged = False
         self.engagedWith = []
         self.maxHealth = health
         self.health = health
@@ -24,8 +23,7 @@ class Player:
         self.clothes = None
         self.shoes = None
         self.weapon = None
-        # self.disguise = None
-        # self.disguised = False
+        self.disguise = None
         self.maxInv = 5
         self.currInv = 0
         self.acquisitions = 0
@@ -50,21 +48,18 @@ class Player:
             print("Not enough money.")
         print()
         input("Press enter to continue...")
-    def acquire(self, store):
+    def acquire(self):
         clear()
-        if self.money >= store.acquisition:
-            if store.hasPersons():
-                for person in store.persons:
+        if self.money >= self.location.acquisition:
+            if self.location.hasPersons():
+                for person in self.location.persons:
                     if type(person) == Merchant:
-                        # drop all of merchant's items so that its pickupable
-                        for i in person.items:
-                            i.putInRoom(self.location)
-                            person.items.remove(i)
                         # remove merchant from game
-                        store.removePerson(person)
-            self.money -= store.acquisition
+                        self.location.removePerson(person)
+            self.money -= self.location.acquisition
             self.acquisitions += 1
-            print("You acquired " + store.desc + "for $" + str(store.acquisition) + "!")
+            self.location.acquired = True
+            print("You acquired " + self.location.desc + " for $" + str(self.location.acquisition) + "!")
         else:
             print("Not enough money.")
         print()
@@ -80,14 +75,17 @@ class Player:
         clear()
         print("You are currently carrying:")
         print()
-        newList = self.items.copy()
-        for i in self.items:
-            if self.items.count(i) > 1:
-                for _ in range(self.items.count(i)):
-                    newList.remove(i)
-                    print(i.name + "(x" + str(self.items.count(i)) + ")")
-        for i in newList:
-            print(i.name)
+        numOccurences = {}
+        for item in self.items:
+            if item in numOccurences:
+                numOccurences[item] += 1
+            else:
+                numOccurences[item] = 1
+        for item in numOccurences:
+            if numOccurences[item] > 1:
+                print(item.name + "(x" + str(numOccurences[item]) + ")")
+            else:
+                print(item.name)
         print()
         print("Space: " + str(self.currInv) + "/" + str(self.maxInv))
         print()
@@ -98,7 +96,7 @@ class Player:
         print()
         print("Health: " + str(self.health) + "/" + str(self.maxHealth))
         print("Regen: " + str(self.regen))
-        print("Money: " + str(self.money))
+        print("Money: $" + str(self.money))
         print("Damage: " + str(self.damage))
         print("Speed: " + str(self.speed))
         print("Cunning: " + str(self.cunning))
@@ -156,15 +154,15 @@ class Player:
         else:
             person.die()
     def attackPerson(self, person):
-        self.engaged = True
-        if person not in self.engagedWith:
-            self.engagedWith.append(person)
         clear()
         print("You (" + str(self.health) + "/" + str(self.maxHealth) + ") are attacking " \
             + person.name + " (" + str(person.health) + "/" + str(person.maxHealth) + ").")
         print()
-        # You attack first if faster or person is unaware
-        if self.speed > person.speed or person.engaged == False: 
+        # if person unaware, free attack
+        if person.engaged == False:
+            self.attack(person)
+        # You attack first if faster 
+        elif self.speed > person.speed: 
             self.attack(person)
             if person.alive == True:
                 person.attack(self)
@@ -175,6 +173,8 @@ class Player:
                 self.attack(person)
         person.engaged = True
         person.scared = False
+        if person not in self.engagedWith:
+            self.engagedWith.append(person)
         print()
         input("Press enter to continue...")
     def pickpocketPerson(self, person):
@@ -189,6 +189,22 @@ class Player:
                 if n != 4:
                     item = random.choice(person.items)
                     person.items.remove(item)
+                    self.items.append(item)
+                    item.loc = self
+                    self.currInv += 1
+                    print("You pickpocketed " + item.name + " from " + person.name + "!")
+                else:
+                    if person.money != 0:
+                        print("You took $" + str(person.money) + " from " + person.name + "!")
+                        person.money = 0
+                    # if no money cuz already pickpocketed, then get $0
+                    else:
+                        print("You already took " + person.name + "'s money.")
+            # if merchant (technically carries no items), then just steal an item from the shop
+            elif type(person) == Merchant and self.currInv < self.maxInv:
+                if n != 4:
+                    item = random.choice(self.location.items)
+                    self.location.items.remove(item)
                     self.items.append(item)
                     item.loc = self
                     self.currInv += 1
@@ -218,12 +234,11 @@ class Player:
                 self.engagedWith.append(person)
             # fighting ensues
             if random.uniform(0.0,1.0) <= person.anger:
-                self.engaged = True
                 # if their speed is higher
                 if self.speed/person.speed < 1.0:
                     person.attack(self)
                 else:
-                    # percent chance to dodge it or something
+                    # percent chance to dodge it 
                     if random.uniform(0.0,1.0) > person.speed/self.speed:
                         print(person.name + " tries to attack you but you dodge them.")
                     else:
@@ -261,12 +276,11 @@ class Player:
             self.damage += item.damage
             self.items.remove(item)
             print("You put on " + item.name + " (+" + str(item.damage) + " DMG)")
-        # elif type(item) == Disguise and self.disguise == None:
-        #     self.disguise = item
-        #     self.currInv -= 1
-        #     self.disguised = True
-        #     self.items.remove(item)
-        #     print("You put on " + item.name + " and are now disguised.")
+        elif type(item) == Disguise and self.disguise == None:
+            self.disguise = item
+            self.currInv -= 1
+            self.items.remove(item)
+            print("You put on " + item.name + " and are now disguised.")
         else:
             print("Your item is not equipable or you already have an item equipped in that slot.")
         print()
@@ -294,12 +308,11 @@ class Player:
                 self.damage -= item.damage
                 self.items.append(item)
                 print("You took off " + item.name + " (-" + str(item.damage) + " DMG)")
-            # elif type(item) == Disguise and self.disguise != None:
-            #     self.disguise = None
-            #     self.currInv += 1
-            #     self.disguised = False
-            #     self.items.append(item)
-            #     print("You took off " + item.name + " and are now undisguised.")
+            elif type(item) == Disguise and self.disguise != None:
+                self.disguise = None
+                self.currInv += 1
+                self.items.append(item)
+                print("You took off " + item.name + " and are now undisguised.")
         else:
             print("Your inventory is full.")
         print()

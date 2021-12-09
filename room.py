@@ -46,10 +46,37 @@ class Room:
 class Store(Room):
     def __init__(self, description, acquisition):
         Room.__init__(self, description)
-        r = round(random.randint(acquisition - acquisition/4, acquisition + acquisition/4), 2)
+        r = round(random.uniform(acquisition - acquisition/4, acquisition + acquisition/4))
         self.acquisition = r
+        self.acquired = False
     def displayItems(self):
-        print("You can buy the following items:")
-        for i in self.items:
-            print(i.name + " ($" + str(i.price) + ")")
+        # acquired store displays normally
+        if self.acquired == True:
+            print("This room contains the following items:")
+            numOccurences = {}
+            for item in self.items:
+                if item in numOccurences:
+                    numOccurences[item] += 1
+                else:
+                    numOccurences[item] = 1
+            for item in numOccurences:
+                if numOccurences[item] > 1:
+                    print(item.name + " (x" + str(numOccurences[item]) + ")")
+                else:
+                    print(item.name)
+        else:
+            print("You can buy the following items:")
+            numOccurences = {}
+            for item in self.items:
+                if item in numOccurences:
+                    numOccurences[item] += 1
+                else:
+                    numOccurences[item] = 1
+            for item in numOccurences:
+                if numOccurences[item] > 1:
+                    print(item.name + " ($" + str(item.price) + ")" + " x" + str(numOccurences[item]))
+                else:
+                    print(item.name + " ($" + str(item.price) + ")")
+            for i in self.items:
+                print(i.name + " ($" + str(i.price) + ")")
         print()

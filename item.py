@@ -7,9 +7,9 @@ class Item:
     def __init__(self, name, desc, price):
         self.name = name
         self.desc = desc
-        r = round(random.uniform(price - price/2, price + price/2))
+        r = round(random.uniform(price - price/5, price + price/5))
         self.price = r
-        self.sellPrice = round(price * 0.75, 2)
+        self.sellPrice = round(r * 0.75, 2)
         self.loc = None
     def describe(self):
         clear()
@@ -40,6 +40,5 @@ class Food(Item):
         Item.__init__(self, name, desc, price)
         self.healing = healing
 
-
-# class Disguise(Item):
-#     used = False
+class Disguise(Item):
+    used = False
