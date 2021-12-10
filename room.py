@@ -77,6 +77,4 @@ class Store(Room):
                     print(item.name + " ($" + str(item.price) + ")" + " x" + str(numOccurences[item]))
                 else:
                     print(item.name + " ($" + str(item.price) + ")")
-            for i in self.items:
-                print(i.name + " ($" + str(i.price) + ")")
         print()

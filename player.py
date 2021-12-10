@@ -7,7 +7,7 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 class Player:
-    def __init__(self, health, regen, damage, speed, cunning, evasion):
+    def __init__(self, health, regen, damage, speed, cunning):
         self.location = None
         self.items = []
         self.alive = True
@@ -18,7 +18,6 @@ class Player:
         self.damage = damage
         self.speed = speed
         self.cunning = cunning
-        self.evasion = evasion
         self.money = 5
         self.clothes = None
         self.shoes = None
@@ -71,6 +70,50 @@ class Player:
         print("You sold " + item.name + " for $" + str(item.sellPrice) + ".")
         print()
         input("Press enter to continue...")
+
+    def helperStats(self, item, name):
+        # show stats increased/ decreased if equipped instead 
+        if name == True:
+            s = item.name 
+        else:
+            s = item.desc
+        if type(item) == Weapon:
+            if self.weapon != None:
+                diff = item.damage - self.weapon.damage
+                if diff > 0:
+                    s += " (+" + str(diff)
+                else:
+                    s += " (-" + str(diff) 
+            else:
+                s += " (+" + str(item.damage) 
+            s += " DMG)"
+        elif type(item) == Clothes:
+            if self.clothes != None:
+                diff = item.health - self.clothes.health
+                if diff > 0:
+                    s += " (+" + str(diff)
+                else:
+                    s += " (-" + str(diff)
+            else:
+                s += " (+" + str(item.health) 
+            s += " HP)"
+        elif type(item) == Shoes:
+            if self.shoes != None:
+                diff = item.speed - self.shoes.speed
+                if diff > 0:
+                    s += " (+" + str(diff)
+                else:
+                    s += " (-" + str(diff)
+            else:
+                s += " (+" + str(item.speed)
+            s += " SPD)"
+        elif type(item) == Food:
+            s += " (Heal " + str(item.healing) + " HP)"
+        elif type(item) == Disguise:
+            s += " (Disguise)"
+        s += " [$" + str(item.price) + "]"
+        return s
+
     def showInventory(self):
         clear()
         print("You are currently carrying:")
@@ -83,9 +126,12 @@ class Player:
                 numOccurences[item] = 1
         for item in numOccurences:
             if numOccurences[item] > 1:
-                print(item.name + "(x" + str(numOccurences[item]) + ")")
+                s = self.helperStats(item, True)
+                s += " x" + str(numOccurences[item])
+                print(s)
             else:
-                print(item.name)
+                s = self.helperStats(item, True)
+                print(s)
         print()
         print("Space: " + str(self.currInv) + "/" + str(self.maxInv))
         print()
@@ -100,7 +146,6 @@ class Player:
         print("Damage: " + str(self.damage))
         print("Speed: " + str(self.speed))
         print("Cunning: " + str(self.cunning))
-        print("Evasion: " + str(self.evasion))
         print()
         print("Equipment:")
         print()
@@ -116,15 +161,23 @@ class Player:
             print("Weapon: " + self.weapon.name)
         else:
             print("Weapon: None")
-        # if self.disguise is not None:
-        #     print("Disguise: " + self.disguise.name)
-        # else:
-        #     print("Disguise: None")
+        if self.disguise is not None:
+            print("Disguise: " + self.disguise.name)
+        else:
+            print("Disguise: None")
         print()
         input("Press enter to continue...")
+    def inspect(self, item):
+        s = self.helperStats(item, False)
+        clear()
+        print(s)
+        print()
+        input("Press enter to exit the game...")
     def losingScreen(self):
         print("Final stats:")
         # show acquisitions and money and equipment and stats
+        print()
+        input("Press enter to continue...")
     def winningScreen(self):
         print("You acquired all of the stores and beat the game!")
         print("You now rule over the city!")
@@ -153,6 +206,18 @@ class Player:
             person.health -= dmg
         else:
             person.die()
+    def chanceDodge(self, person):
+        # percent chance to dodge based on speed
+        if random.random() > person.speed/self.speed:
+            print(person.name + " tries to attack you but you dodge them.")
+        else:
+            person.attack(self)
+    def personChanceDodge(self, person):
+        # percent chance to dodge based on speed
+        if random.random() > self.speed/person.speed:
+            print("You try to attack " + person.name + " but they dodge you.")
+        else:
+            self.attack(person)
     def attackPerson(self, person):
         clear()
         print("You (" + str(self.health) + "/" + str(self.maxHealth) + ") are attacking " \
@@ -165,18 +230,23 @@ class Player:
         elif self.speed > person.speed: 
             self.attack(person)
             if person.alive == True:
-                person.attack(self)
-        # Person attacks first
+                self.chanceDodge(person)
+        # if person is faster, attack first
         else:
+            # no chance dodging since person.speed/self.speed > 1.0
             person.attack(self)
             if self.alive == True:
-                self.attack(person)
+                self.personChanceDodge(person)
         person.engaged = True
         person.scared = False
         if person not in self.engagedWith:
             self.engagedWith.append(person)
         print()
         input("Press enter to continue...")
+    def increaseCunning(self):
+        r = random.randint(3,6)
+        self.cunning += r
+        print("Your cunning went up by " + str(r) + "!")
     def pickpocketPerson(self, person):
         clear()
         print("You are pickpocketing " + person.name)
@@ -193,10 +263,12 @@ class Player:
                     item.loc = self
                     self.currInv += 1
                     print("You pickpocketed " + item.name + " from " + person.name + "!")
+                    self.increaseCunning()
                 else:
                     if person.money != 0:
                         print("You took $" + str(person.money) + " from " + person.name + "!")
                         person.money = 0
+                        self.increaseCunning()
                     # if no money cuz already pickpocketed, then get $0
                     else:
                         print("You already took " + person.name + "'s money.")
@@ -209,10 +281,12 @@ class Player:
                     item.loc = self
                     self.currInv += 1
                     print("You pickpocketed " + item.name + " from " + person.name + "!")
+                    self.increaseCunning()
                 else:
                     if person.money != 0:
                         print("You took $" + str(person.money) + " from " + person.name + "!")
                         person.money = 0
+                        self.increaseCunning()
                     # if no money cuz already pickpocketed, then get $0
                     else:
                         print("You already took " + person.name + "'s money.")
@@ -220,10 +294,6 @@ class Player:
                 print("Your backpack is full...")
             else:
                 print(person.name + " has nothing...")
-            # successful pickpocket regardless of if they have nothing or if backpack full increases cunning
-            r = random.randint(3,6)
-            self.cunning += r
-            print("Your cunning went up by " + str(r) + "!")
             
         else:
             print(person.name + " noticed!")
@@ -235,21 +305,21 @@ class Player:
             # fighting ensues
             if random.uniform(0.0,1.0) <= person.anger:
                 # if their speed is higher
-                if self.speed/person.speed < 1.0:
+                if person.speed > self.speed:
                     person.attack(self)
                 else:
-                    # percent chance to dodge it 
-                    if random.uniform(0.0,1.0) > person.speed/self.speed:
-                        print(person.name + " tries to attack you but you dodge them.")
-                    else:
-                        person.attack(self)
+                    self.chanceDodge(person)
             # person is scared, an enforcer is added to the map
             else:
                 person.scared = True
                 person.engaged = False
                 print(person.name + " is scared and calls an enforcer to the city.")
                 # add an extra enforcer on the map that is constantly engaged
-                enforcer = random.choice(allEnforcers)
+                if allEnforcers != []:
+                    enforcer = random.choice(allEnforcers)
+                    allEnforcers.remove(enforcer)
+                else:
+                    enforcer = enf0
                 enforcer.room.addPerson(enforcer)
                 enforcer.onMap = True
         print()

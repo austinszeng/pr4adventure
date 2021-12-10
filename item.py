@@ -23,22 +23,26 @@ class Item:
 class Weapon(Item):
     def __init__(self, name, desc, price, damage):
         Item.__init__(self, name, desc, price)
-        self.damage = damage
+        r = round(random.uniform(damage - damage/5, damage + damage/5))
+        self.damage = r
 
 class Clothes(Item):
     def __init__(self, name, desc, price, health):
         Item.__init__(self, name, desc, price)
-        self.health = health
+        r = round(random.uniform(health - health/5, health + health/5))
+        self.health = r
 
 class Shoes(Item):
     def __init__(self, name, desc, price, speed):
         Item.__init__(self, name, desc, price)
-        self.speed = speed
+        r = round(random.uniform(speed - speed/5, speed + speed/5))
+        self.speed = r
 
 class Food(Item):
     def __init__(self, name, desc, price, healing):
         Item.__init__(self, name, desc, price)
-        self.healing = healing
+        r = round(random.uniform(healing - healing/5, healing + healing/5))
+        self.healing = r
 
 class Disguise(Item):
     used = False

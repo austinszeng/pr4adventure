@@ -6,11 +6,11 @@ from misc import *
 import random
 
 def charChoice(choice):
-    # Player (health, regen, damage, speed, cunning, evasion):
+    # Player (health, regen, damage, speed, cunning):
     player = None
-    player1 = Player(100, 5, 15, 50, 10, 50) # balance
-    player2 = Player(75, 5, 10, 60, 15, 60) # focus more on speed and cunning
-    player3 = Player(150, 10, 25, 25, 5, 40) # brute
+    player1 = Player(125, 5, 20, 50, 10) # balance
+    player2 = Player(100, 5, 15, 60, 15) # focus more on speed and cunning
+    player3 = Player(150, 10, 25, 40, 5) # brute
     if choice == "1":
         player = player1
     elif choice == "2":
@@ -36,17 +36,26 @@ def createWorld(player):
     Room.connectRooms(l, "down", k, "up")
     Room.connectRooms(k, "right", j, "left")
 
-    i0 = Item("Rock", "This is just a rock.", 0)
-    i0.putInRoom(a)
-    i0.putInRoom(a)
-    player.location = a
+    player.location = a 
 
-    # For testing
-    w0.putInRoom(a)
-    i1.putInRoom(a)
-    c0.putInRoom(a)
-    s0.putInRoom(a)
-    f0.putInRoom(a)
+    rr = random.randint(1,4)
+    if rr == 1 or rr == 4:
+        a0.putInRoom(a)
+    if rr == 2:
+        b0.putInRoom(b)
+    if rr == 1:
+        c0.putInRoom(c)
+    if rr == 2:
+        c1.putInRoom(c)
+    if rr == 3:
+        c2.putInRoom(c)
+    if rr == 3:
+        h0.putInRoom(h)
+    if rr == 2 or rr == 4:
+        m0.putInRoom(m)
+
+    for item in room_items:
+        item.putInRoom(random.choice(nonStoreRooms))
 
     Person("Bob", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
     Person("Jeffrey", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
@@ -58,6 +67,12 @@ def createWorld(player):
     Person("Shelly", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
     Person("Bobby", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
     Person("Kelly", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
+    Person("Karl", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
+    Person("John", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
+    Person("Johnson", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
+    Person("Johnny", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
+    Person("Barbara", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
+    Person("Barbie", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
 
     storeRooms = [f,i,j,l]
     r = random.choice(storeRooms)
