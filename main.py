@@ -396,8 +396,18 @@ while playing and player.alive:
                     commandSuccess = False
                 else:
                     timePasses = True
-        elif commandWords[0].lower() == "wait" or commandWords[0].lower() == "w":
-            timePasses = True   
+        elif commandWords[0].lower() == "wait":
+            if player.location.hasPersons():
+                canWait = True
+                for person in player.location.persons:
+                    if person in player.engagedWith:
+                        print("You can't wait right now.")
+                        commandSuccess = False
+                        canWait = False
+                if canWait == True:
+                    timePasses = True
+            else:
+                timePasses = True   
         else:
             print("Not a valid command")
             commandSuccess = False

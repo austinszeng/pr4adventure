@@ -46,17 +46,21 @@ class Person:
 class Enforcer(Person):
     # needed to change whole init so room doesn't automatically addPerson
     def __init__(self, name, room, items):
-        Person.__init__(self, name, room, items)
+        self.name = name
+        self.alive = True
         r = random.randint(125,250)
         self.health = r
         self.maxHealth = r
         self.attentive = random.uniform(0.4,0.8)
-        self.damage = random.randint(20,50)
+        self.damage = random.randint(20,35)
         self.speed = random.randint(45,70)
-        self.anger = 1.0 # Enforcer always will attack you if you try to pickpocket
+        self.anger = 1.0 # Enforcer always will attack you if you try to pickpocket and fail
         self.money = random.randint(1,50)
         self.engaged = True
-
+        self.scared = False
+        self.room = room
+        self.items = items
+        self.money = random.randint(1,50)
     def update(self):
         if random.random() < .5:
             self.moveTo(self.room.randomNeighbor())
