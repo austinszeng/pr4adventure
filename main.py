@@ -309,7 +309,6 @@ while playing and player.alive:
         elif commandWords[0].lower() == "exit":
             clear()
             print("Thanks for playing!")
-            print()
             player.losingScreen()
             playing = False
         elif commandWords[0].lower() == "attack":

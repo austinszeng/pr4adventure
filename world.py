@@ -38,24 +38,28 @@ def createWorld(player):
 
     player.location = a 
 
-    rr = random.randint(1,4)
-    if rr == 1 or rr == 4:
+    r = random.randint(1,4)
+    if r == 1 or r == 4:
         a0.putInRoom(a)
-    if rr == 2:
+    if r == 2:
         b0.putInRoom(b)
-    if rr == 1:
+    if r == 1:
         c0.putInRoom(c)
-    if rr == 2:
+    if r == 2:
         c1.putInRoom(c)
-    if rr == 3:
+    if r == 3:
         c2.putInRoom(c)
-    if rr == 3:
+    if r == 3:
         h0.putInRoom(h)
-    if rr == 2 or rr == 4:
+    if r == 2 or r == 4:
         m0.putInRoom(m)
 
-    for item in room_items:
-        item.putInRoom(random.choice(nonStoreRooms))
+    r = random.randint(10,15)
+    ind = 0
+    while ind < r:
+        random.shuffle(room_items)
+        room_items[ind].putInRoom(random.choice(nonStoreRooms))
+        ind += 1
 
     Person("Bob", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))
     Person("Jeffrey", random.choice(allRooms), random.sample(person_items, random.randint(1,3)))

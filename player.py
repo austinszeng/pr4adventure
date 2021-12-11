@@ -159,19 +159,19 @@ class Player:
         if self.clothes is not None:
             print("Clothes: " + self.clothes.name)
         else:
-            print("Clothes: None")
+            print("Clothes: ")
         if self.shoes is not None:
             print("Shoes: " + self.shoes.name)
         else:
-            print("Shoes: None")
+            print("Shoes: ")
         if self.weapon is not None:
             print("Weapon: " + self.weapon.name)
         else:
-            print("Weapon: None")
+            print("Weapon: ")
         if self.disguise is not None:
             print("Disguise: " + self.disguise.name)
         else:
-            print("Disguise: None")
+            print("Disguise: ")
         print()
         input("Press enter to continue...")
     def inspect(self, item):
@@ -179,17 +179,45 @@ class Player:
         clear()
         print(s)
         print()
-        input("Press enter to exit the game...")
+        input("Press enter to continue...")
     def losingScreen(self):
         print()
         print("Final stats:")
-        # show acquisitions and money and equipment and stats
         print()
-        input("Press enter to continue...")
+        print("Acquisitions: " + str(self.acquisitions) + "/" + str(4))
+        # print("People left: " + )
+        print()
+        print("Health: " + str(self.health) + "/" + str(self.maxHealth))
+        print("Regen: " + str(self.regen))
+        print("Money: $" + str(self.money))
+        print("Damage: " + str(self.damage))
+        print("Speed: " + str(self.speed))
+        print("Cunning: " + str(self.cunning))
+        print()
+        print("Equipment:")
+        print()
+        if self.clothes is not None:
+            print("Clothes: " + self.clothes.name)
+        else:
+            print("Clothes: ")
+        if self.shoes is not None:
+            print("Shoes: " + self.shoes.name)
+        else:
+            print("Shoes: ")
+        if self.weapon is not None:
+            print("Weapon: " + self.weapon.name)
+        else:
+            print("Weapon: ")
+        if self.disguise is not None:
+            print("Disguise: " + self.disguise.name)
+        else:
+            print("Disguise: ")
+        print()
+        input("Press enter to exit the game...")
     def winningScreen(self):
         print()
         print("You acquired all of the stores and beat the game!")
-        print("You now rule over the city!")
+        print("You now rule the city!")
         print()
         self.losingScreen()
     def die(self):
@@ -282,7 +310,7 @@ class Player:
                     else:
                         print("You already took " + person.name + "'s money.")
             # if merchant (technically carries no items), then just steal an item from the shop
-            elif type(person) == Merchant and self.currInv < self.maxInv:
+            elif type(person) == Merchant and self.location.items != [] and self.currInv < self.maxInv:
                 if n != 4:
                     item = random.choice(self.location.items)
                     self.location.items.remove(item)
