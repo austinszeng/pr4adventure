@@ -44,24 +44,14 @@
 - acquire all 4 stores (this will be the final implementation)
 
 ## Bugs:
-- Enforcers are all over the map now prespawned lol
-    - try just redoing inheritance? this happened after i readded inheritance cuz I forgot about it
-- test "go" with disguise mechanics with enforcers
-- Make another win condition be if you kill everyone on the map and acquisition all (haven't tested yet)
-- test - make it so you can't wait when there's an engaged person in the room
-- error when pickpocketing:
-    -  File "C:\Users\etcje\Desktop\CSCI121\pr4adventure\main.py", line 327, in <module>
-            player.pickpocketPerson(target)
-        File "C:\Users\etcje\Desktop\CSCI121\pr4adventure\player.py", line 287, in pickpocketPerson
-            item = random.choice(self.location.items)
-        File "C:\Users\etcje\AppData\Local\Programs\Python\Python39\lib\random.py", line 347, in choice
-            return seq[self._randbelow(len(seq))]
-        IndexError: list index out of range
-- final stats message press enter twice when die
+- Win conditions not tested yet
+
+## Notes:
+- variables names are really sensitive due to the way i'm using inheritance with misc.py
 
 ## Ideas:
 - make it so you can't pickpocket when someone is engaged in the room?
-- limit amount of items in room
+- limit amount of items in all the rooms to like 24?
 - running away is way too easy rn
 - after all of this, need to balance the game
 - function for locating people in room would've been useful, maybe implement that if enough time just for organization sake
