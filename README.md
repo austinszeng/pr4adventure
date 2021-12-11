@@ -44,11 +44,13 @@
 - acquire all 4 stores (this will be the final implementation)
 
 ## Bugs:
-- merchant's still move around?
+- Enforcers are all over the map now prespawned lol
 - test "go" with disguise mechanics with enforcers
 - Make another win condition be if you kill everyone on the map and acquisition all (haven't tested yet)
 
 ## Ideas:
-- I technically only want to make store items have their sellPrices be 75%
-- display price?
-- make special items based on the room names
+- make it so you can't wait when there's an engaged person in the room
+- make it so you can't pickpocket when someone is engaged in the room?
+- limit amount of items in room
+- running away is way too easy rn
+- after all of this, need to balance the game

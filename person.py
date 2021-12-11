@@ -46,31 +46,28 @@ class Person:
 class Enforcer(Person):
     # needed to change whole init so room doesn't automatically addPerson
     def __init__(self, name, room, items):
-        self.name = name
-        self.alive = True
+        Person.__init__(self, name, room, items)
         r = random.randint(125,250)
         self.health = r
         self.maxHealth = r
         self.attentive = random.uniform(0.4,0.8)
         self.damage = random.randint(20,50)
-        self.speed = random.randint(50,80)
-        self.cunning = random.randint(5,15) # additional attribute
-        self.anger = random.uniform(0.25, 0.75)
-        self.room = room
-        self.items = items
+        self.speed = random.randint(45,70)
+        self.anger = 1.0 # Enforcer always will attack you if you try to pickpocket
         self.money = random.randint(1,50)
         self.engaged = True
-        self.onMap = False
-        updater.register(self)
 
     def update(self):
-        if self.onMap and random.random() < .5:
+        if random.random() < .5:
             self.moveTo(self.room.randomNeighbor())
 
 class Merchant(Person):
     def __init__(self, name, room, items):
         Person.__init__(self, name, room, items)
         self.attentive = random.uniform(0.25,0.5)
+        # # testing
+        # self.attentive = 1.0
+        # self.anger = 0.0
         for i in items:
             i.putInRoom(self.room) # put in room so items can be displayed
         self.items = []
