@@ -1,57 +1,50 @@
 # Blah Blah
 ## Blah Blah is a game where you are a bandit roaming the streets and pickpocket items/ money from people or stores and sell these stolen goods to stores to make money to buy items and acquire stores. To win the game, acquire all the stores. However, each time you pickpocket, there comes a risk of being seen or caught. You may have to deal with the police and/ or being attacked. 
 
-# Improvements/ Changes (Current: 40 points):
+# Improvements (Current: 40 points):
 ## "me" command (2 points)
-- Added showStats method in Player to show current status
+- Added showStats method in Player to show current status and equipment
 ## "inspect" command (2 points)
-- Displays item description using describe method in Item
+- Displays item description using helperStats function in Player, which also shows the stats increased/ decreased if an equippable item is equipped instead of what you currently have in that slot (if anything), the healing effects of food items, and the sell price of all items
+## item stacking (2 points)
+- Modified showInventory method in Player to use the helperStats function to display the same information as the "inspect" command next to the given inventory item. Prints duplicate items with "xNum" rather than printing the same item more than once.
 ## limited inventory (2 points)
-- Added an inventory size variable to Player that is kept track of by the pickup and drop methods. 
+- Added currInv and maxInv variables to Player that is kept track of by the various methods that add to/ take from the player's inventory 
 ## "drop" command (2 points)
-- Added getItemByName method for the player's inventory (similar to the one in Room) and drop method that removes an item from one's inventory and into the room in Player.
+- Added getItemByName method for the player's inventory (similar to the one in Room) and drop method that removes an item from one's inventory and into the player's current room in Player.
 ## "wait" command (2 points)
-- Makes time pass while not having to move to a different room.
+- Makes time pass while not having to move to a different room unless someone is engaged with you in that room.
 ## regeneration (2 points)
 - Adds instance variables maxHealth and regen to Player to regenerate when time passes.
 ## more monsters (3 points)
-- Normal people and police and merchants with different levels of attentiveness, speed, and anger. The higher the anger, the more likely the person is to fight back rather than call an enforcer. If speed is higher than yours, then you're unable to run away. If an enforcer's cunning and speed and damage are higher than yours the more likely you are to get arrested and lose if you catch their attention.
-- pickpocketPerson
-- change attackPerson
+- There are normal people, merchants, and enforcers. Both Merchant and Enforcer classes inherit from Person and have altered levels of health, attentiveness, speed, anger, etc. The higher the anger, the more likely the person is to fight back rather than call an enforcer. If their speed is higher than the player's, then the player is more unlikely to be able to run away. Merchants can't move away from their store.
 ## player attributes (3 points)
-- Added speed and cunning which affects interactions with people
-- Every successful pickpocket increases cunning
-## weapons (2 points)
-- Added a Weapon class that inherits from Item which will add a damage attribute to the item and can be used to fight/ attack people.
-## armor (2 points)
-- Clothes increase health
-- Shoes increase evasion
-- Hats are a disguise where people who are mad at you can't see you if you have it on
-    - if you have a disguise on when they fight you, it's ineffective and goes away
-## item stacking (2 points)
-- Modified showInventory method in Player to print duplicate items first with "(xNum)"
+- Added damage, speed, and cunning attributes. A higher cunning value increases the success rate of pickpocketing and a higher speed value increases the success rate of running away and allows the player to attack first and be able to have a chance to dodge an opponent's attacks when fighting.
+## weapons and armor (4 points)
+- Added Weapon, Clothes, Shoes, and Disguise classes that all inherit from item. Respectively, they increase player damage, player health, and player speed when equipped. When an item of the Disguise class is equipped, it allows the player to be able to move freely away from all types of people regardless of if they are engaged, but the Disguise item is used up if used to move away from an Enforcer.
 ## bigger world (2 points)
-## "run" command 
+- Now contains a world of 13 rooms, 4 of those being stores.
 ## currency (4 points)
-- Store class to buy/ sell items
+- Added a Store class that inherits from Room that contains buyable items. A player can sell items to stores they either find from rooms or pickpocket from people to make money. A store can also be acquired, which gives ownership of the store to the player and makes all of the store's items pickupable.
 ## loot (3 points)
-- pickpocketing gives loot and also when killing the person lol
+- Pickpocketing a person gives loot/ money based on the items the person is carrying (randomly chosen from a list of items in misc.py) and the amount of money the person is carrying. Additionally, killing a person also gives you their loot.
 ## healing item (2 points)
-- food
+- Added a Food class that inherits from Item and can be eaten using the "eat" command in Player that restores the health given by that item. 
 ## introducing monsters during play (2 points)
-- enforcer
+- An enforcer is added to the map in a random location when a person you pickpocket notices you and gets scared. The enforcer(s) are a lot stronger than normal people and are constantly engaged and looking for the player.
 ## victory condition (3 points)
-- acquire all 4 stores (this will be the final implementation)
+- To win, the player can acquire all 4 stores on the map or kill all of the people on the map (including any added enforcers)
 
 ## Bugs:
-- Win conditions not tested yet
+- win condition acquisitions (checked and works)
+- win condition people left (not checked)
 
-## Notes:
+## Notes :
 - variables names are really sensitive due to the way i'm using inheritance with misc.py
+- when person dies in store, the items go to the store (maybe this is a mechanic though where you shouldn't kill in stores)
+- make it so you can't pickpocket when someone is engaged in the room?
+- pickpocketing and attacking both have risks of adding an enforcer to the map during the first encounter if the person notices and gets scared. However, the same person cannot call an enforcer on the map twice. They either stay scared are they have a chance to get mad and be engaged instead. Once engaged, they stay engaged
 
 ## Ideas:
-- make it so you can't pickpocket when someone is engaged in the room?
-- limit amount of items in all the rooms to like 24?
-- running away is way too easy rn
-- after all of this, need to balance the game
-- function for locating people in room would've been useful, maybe implement that if enough time just for organization sake
+- after all of this, need to balance the game (e.g. running away is way too easy rn)
+- maybe make stealing money more complicated and don't make it all go away with one swipe? add money that merchant makes from store to merchant's money?
