@@ -143,3 +143,4 @@ enf8 = Enforcer("Bobby", random.choice(allRooms), random.sample(enforcer_items, 
 enf9 = Enforcer("Tank", random.choice(allRooms), random.sample(enforcer_items, random.randint(1,3)))
 enf10 = Enforcer("Tuna", random.choice(allRooms), random.sample(enforcer_items, random.randint(1,3)))
 allEnforcers = [enf1,enf2,enf3,enf4,enf5,enf6,enf7,enf8,enf9,enf10]
+enforcersAdded = []

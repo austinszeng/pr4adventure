@@ -94,11 +94,12 @@ createWorld(player)
 playing = True
 while playing and player.alive:
     winCondition = True
-    for i in allRooms:
-        if i.persons != []:
+    for room in allRooms:
+        if room.hasPersons():
             winCondition = False
     if player.acquisitions == 4 or winCondition == True:
         player.win()
+        break
     printSituation()
     commandSuccess = False
     timePasses = False
@@ -309,6 +310,7 @@ while playing and player.alive:
         elif commandWords[0].lower() == "exit":
             clear()
             print("Thanks for playing!")
+            print()
             player.losingScreen()
             playing = False
         elif commandWords[0].lower() == "attack":
@@ -344,56 +346,53 @@ while playing and player.alive:
                 print("No such item equipped.")
                 commandSuccess = False
         elif commandWords[0].lower() == "run":
-            if player.location.hasPersons():
-                # find persons in room
-                important = []
-                for i in player.location.persons:
-                    if i in player.engagedWith:
-                        important.append(i)
-                # find max speed of person(s) mad at you
-                max, p = 0, None
-                for person in important:
-                    if person.speed > max:
-                        max = person.speed
-                        p = person
-                # if there are persons in room that are mad at you
-                if important != []:
-                    if player.disguise != None:
-                        print("You have a disguise on, you don't need to run.")
-                        commandSuccess = False
-                    # if no disguise, try running
-                    else:
-                        if player.speed > p.speed:
-                            clear()
-                            print("You have successfully run away from " + p.name + "!")
-                            print()
-                            input("Press enter to continue...")
-                            player.goDirection(commandWords[1]) 
-                            timePasses = True
-                        else: 
-                            clear()
-                            print("You can not run away...")
-                            print()
-                            if p.speed > player.speed:
-                                p.attack(player)
-                            else:
-                                player.chanceDodge(p)
-                            print()
-                            input("Press enter to continue...")
-                else:
-                    go = player.goDirection(commandWords[1])
-                    if go == False:
-                        print("Enter a valid direction.")
-                        commandSuccess = False
-                    else:
-                        timePasses = True
-            # same as "go (direction)"
+            go = player.testGoDirection(commandWords[1])
+            if go == False:
+                print("Enter a valid direction")
+                commandSuccess = False
             else:
-                go = player.goDirection(commandWords[1])
-                if go == False:
-                    print("Enter a valid direction.")
-                    commandSuccess = False
+                if player.location.hasPersons():
+                    # find persons in room
+                    important = []
+                    for i in player.location.persons:
+                        if i in player.engagedWith:
+                            important.append(i)
+                    # find max speed of person(s) mad at you
+                    max, p = 0, None
+                    for person in important:
+                        if person.speed > max:
+                            max = person.speed
+                            p = person
+                    # if there are persons in room that are mad at you
+                    if important != []:
+                        if player.disguise != None:
+                            print("You have a disguise on, you don't need to run.")
+                            commandSuccess = False
+                        # if no disguise, try running
+                        else:
+                            if player.speed > p.speed:
+                                # high percent chance to run based on how much faster you are
+                                if random.random() > p.speed/player.speed:
+                                    player.runSuccess(p)
+                                    # don't need to check if valid cuz already did at beginning of function
+                                    player.goDirection(commandWords[1])
+                                    timePasses = True
+                                else:
+                                    player.runFail(p)
+                            else: 
+                                # the greater the difference in your speed, the less chance
+                                if random.random() > player.speed/p.speed:
+                                    player.runFail(p)
+                                else:
+                                    player.runSuccess(p)
+                                    player.goDirection(commandWords[1])
+                                    timePasses = True
+                    else:
+                        player.goDirection(commandWords[1])
+                        timePasses = True
+                # same as "go (direction)"
                 else:
+                    player.goDirection(commandWords[1])
                     timePasses = True
         elif commandWords[0].lower() == "wait":
             if player.location.hasPersons():

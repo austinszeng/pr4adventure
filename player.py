@@ -32,6 +32,12 @@ class Player:
             self.location = loc
         else:
             return False
+    def testGoDirection(self, direction):
+        loc = self.location.getDestination(direction)
+        if loc != False:
+            return True
+        else:
+            return False
     def pickup(self, item):
         self.items.append(item)
         self.currInv += 1
@@ -80,8 +86,10 @@ class Player:
 
     def helperStats(self, item, name):
         # show stats increased/ decreased if equipped instead 
+        # displays name for inventory info
         if name == True:
             s = item.name 
+        # name == False displays description rather than name (for inspect command)
         else:
             s = item.desc
         if type(item) == Weapon:
@@ -181,11 +189,15 @@ class Player:
         print()
         input("Press enter to continue...")
     def losingScreen(self):
-        print()
         print("Final stats:")
         print()
         print("Acquisitions: " + str(self.acquisitions) + "/" + str(4))
-        # print("People left: " + )
+        peopleLeft = 0
+        for room in allRooms:
+            if room.hasPersons():
+                peopleLeft += len(room.persons)
+        # since there are always 20 people + len(enforcersAdded)
+        print("People left: " + str(peopleLeft) + "/" + str(20 + len(enforcersAdded)) )
         print()
         print("Health: " + str(self.health) + "/" + str(self.maxHealth))
         print("Regen: " + str(self.regen))
@@ -215,7 +227,7 @@ class Player:
         print()
         input("Press enter to exit the game...")
     def winningScreen(self):
-        print()
+        clear()
         print("You acquired all of the stores and beat the game!")
         print("You now rule the city!")
         print()
@@ -223,16 +235,16 @@ class Player:
     def die(self):
         print()
         print("You died.")
-        self.losingScreen()
-        self.alive = False
-    def lose(self):
-        print("You lose.")
         print()
+        input("Press enter to continue...")
+        clear()
         self.losingScreen()
         self.alive = False
     def win(self):
+        print()
         print("You won!")
         print()
+        input("Press enter to continue...")
         self.winningScreen()
         self.alive = False
     def attack(self, person):
@@ -255,14 +267,48 @@ class Player:
             print("You try to attack " + person.name + " but they dodge you.")
         else:
             self.attack(person)
+    def personMad(self, person):
+        person.engaged = True
+        person.scared = False
+        if person not in self.engagedWith:
+            print(person.name + " is mad and gets ready to fight you.")
+            self.engagedWith.append(person)
+    def personScared(self, person):
+        person.scared = True
+        person.engaged = False
+        print(person.name + " is scared and calls an enforcer to the city.")
+        # add an extra enforcer on the map that is constantly engaged
+        if allEnforcers != []:
+            enforcer = random.choice(allEnforcers)
+            allEnforcers.remove(enforcer)
+        else:
+            enforcer = Enforcer("Trooper", random.choice(allRooms), random.sample(enforcer_items, random.randint(1,3)))
+        # enforcer.room.addPerson(enforcer)
+        # for testing
+        enforcersAdded.append(enforcer)
+        enforcer.room = self.location
+        self.location.addPerson(enforcer)
+        updater.register(enforcer)
+        self.engagedWith.append(enforcer)
     def attackPerson(self, person):
         clear()
         print("You (" + str(self.health) + "/" + str(self.maxHealth) + ") are attacking " \
             + person.name + " (" + str(person.health) + "/" + str(person.maxHealth) + ").")
         print()
         # if person unaware, free attack
-        if person.engaged == False:
+        if person.engaged == False and person.scared == False:
             self.attack(person)
+            if random.random() <= person.anger:
+                self.personMad(person)
+            # chance for person to call an enforcer 
+            else:
+                self.personScared(person)
+        # chance for scared person to get mad
+        elif person.scared == True:
+            self.attack(person)
+            if random.random() <= person.anger:
+                self.personMad(person)
+        # last two happen if person is engaged
         # You attack first if faster 
         elif self.speed > person.speed: 
             self.attack(person)
@@ -274,10 +320,6 @@ class Player:
             person.attack(self)
             if self.alive == True:
                 self.personChanceDodge(person)
-        person.engaged = True
-        person.scared = False
-        if person not in self.engagedWith:
-            self.engagedWith.append(person)
         print()
         input("Press enter to continue...")
     def increaseCunning(self):
@@ -335,36 +377,52 @@ class Player:
         else:
             print(person.name + " noticed!")
             print()
-            # fighting ensues
-            if random.random() <= person.anger:
-                person.engaged = True
-                person.scared = False
-                if person not in self.engagedWith:
-                    self.engagedWith.append(person)
+            # first encounter
+            if person.engaged == False and person.scared == False:
+                # fighting ensues
+                if random.random() <= person.anger:
+                    self.personMad(person)
+                    # if their speed is higher
+                    if person.speed > self.speed:
+                        person.attack(self)
+                    else:
+                        self.chanceDodge(person)
+                # person is scared, an enforcer is added to the map
+                else:
+                    self.personScared(person)
+            # chance for scared person to get mad or stay scared
+            elif person.scared == True:
+                if random.random() <= person.anger:
+                    self.personMad(person)
+                else:
+                    print(person.name + " is still scared of you.")
+            # they attack you if they notice and are already engaged
+            elif person.engaged == True:
                 # if their speed is higher
                 if person.speed > self.speed:
                     person.attack(self)
                 else:
                     self.chanceDodge(person)
-            # person is scared, an enforcer is added to the map
-            else:
-                person.scared = True
-                person.engaged = False
-                print(person.name + " is scared and calls an enforcer to the city.")
-                # add an extra enforcer on the map that is constantly engaged
-                if allEnforcers != []:
-                    enforcer = random.choice(allEnforcers)
-                    allEnforcers.remove(enforcer)
-                else:
-                    enforcer = Enforcer("Trooper", random.choice(allRooms), random.sample(enforcer_items, random.randint(1,3)))
-                # enforcer.room.addPerson(enforcer)
-                # for testing
-                enforcer.room = self.location
-                self.location.addPerson(enforcer)
-                updater.register(enforcer)
-                self.engagedWith.append(enforcer)
         print()
         input("Press enter to continue...")
+
+    def runSuccess(self, p):
+        clear()
+        print("You have successfully run away from " + p.name + "!")
+        print()
+        input("Press enter to continue...")
+    
+    def runFail(self, p):
+        clear()
+        print("You can not run away...")
+        print()
+        if p.speed > self.speed:
+            p.attack(self)
+        else:
+            self.chanceDodge(p)
+        print()
+        input("Press enter to continue...")
+
 
     def equip(self, item):
         clear()

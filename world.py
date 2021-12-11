@@ -54,6 +54,7 @@ def createWorld(player):
     if r == 2 or r == 4:
         m0.putInRoom(m)
 
+    # total amount of room items is 17, choose 10-15 of those
     r = random.randint(10,15)
     ind = 0
     while ind < r:

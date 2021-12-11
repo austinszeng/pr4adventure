@@ -41,6 +41,7 @@ class Person:
         if player.health - dmg > 0:
             player.health -= dmg
         else:
+            player.health = 0
             player.die()
 
 class Enforcer(Person):
@@ -69,9 +70,6 @@ class Merchant(Person):
     def __init__(self, name, room, items):
         Person.__init__(self, name, room, items)
         self.attentive = random.uniform(0.25,0.5)
-        # # testing
-        # self.attentive = 1.0
-        # self.anger = 0.0
         for i in items:
             i.putInRoom(self.room) # put in room so items can be displayed
         self.items = []
