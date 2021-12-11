@@ -24,11 +24,13 @@ def printSituation():
             s = m.name + " (" + str(m.health) + "/" + str(m.maxHealth) + ")"
             if type(m) == Merchant:
                 s += " (Merchant)"
+            elif type(m) == Enforcer:
+                s += " (Enforcer)"
             if m.engaged:
                 s += " (engaged)"
             elif m.scared:
                 s += " (scared)"
-        print(s)
+            print(s)
         print()
     if player.location.hasItems():
         if type(player.location) == Room:
@@ -61,6 +63,8 @@ def showHelp():
     print("drop <item> -- drop item from inventory")
     print("equip <item> -- equip an equippable item from inventory")
     print("unequip <item> -- unequip equipped item")
+    print("inspect <item> -- displays what the item is with its attached " + "\n" + 
+          "                  attributes compared to your equipment and sell price.")
     print("run <direction> -- if engaged")
     print("buy <item> -- buy item from store")
     print("acquire -- buy store")
@@ -111,7 +115,6 @@ while playing and player.alive:
                 break
         commandWords = command.split()
         if commandWords[0].lower() == "go":   #cannot handle multi-word directions
-            hasEnforcer = False
             if player.location.hasPersons():
                 # find mad persons in room
                 important = []
@@ -120,6 +123,7 @@ while playing and player.alive:
                         important.append(i)
                 # check if enforcer is in room
                 if important != []:
+                    hasEnforcer = False
                     for person in important:
                         if type(person) == Enforcer:
                             hasEnforcer = True
@@ -142,18 +146,30 @@ while playing and player.alive:
                     else:
                         # disguise protects against normal people
                         if player.disguise != None:
-                            player.goDirection(commandWords[1])
-                            timePasses = True
+                            go = player.goDirection(commandWords[1])
+                            if go == False:
+                                print("Enter a valid direction.")
+                                commandSuccess = False
+                            else:
+                                timePasses = True
                         else:
                             print("You can't do that right now.")
                             commandSuccess = False
                 # if no mad people
                 else:
-                    player.goDirection(commandWords[1])
-                    timePasses = True
+                    go = player.goDirection(commandWords[1])
+                    if go == False:
+                        print("Enter a valid direction.")
+                        commandSuccess = False
+                    else:
+                        timePasses = True
             else:
-                player.goDirection(commandWords[1])
-                timePasses = True
+                go = player.goDirection(commandWords[1])
+                if go == False:
+                    print("Enter a valid direction.")
+                    commandSuccess = False
+                else:
+                    timePasses = True
 
         elif commandWords[0].lower() == "pickup":  #can handle multi-word objects
             targetName = command[7:]
@@ -172,10 +188,8 @@ while playing and player.alive:
                         # if store is acquired, you can pick up
                         else:
                             player.pickup(target)
-                            player.currInv += 1
                     else:
                         player.pickup(target)
-                        player.currInv += 1
                 elif player.currInv >= player.maxInv:
                     print("Backpack full.")
                     commandSuccess = False
@@ -234,7 +248,6 @@ while playing and player.alive:
                                 commandSuccess = False
                             else:
                                 player.buy(target)
-                                player.currInv += 1
                         elif player.currInv >= player.maxInv:
                             print("Backpack full.")
                             commandSuccess = False
@@ -266,7 +279,6 @@ while playing and player.alive:
                     else:
                         if player.location.acquired == False:
                             player.sell(target)
-                            player.currInv -= 1
                         else:
                             print("You can't sell items to your own store.")
                             commandSuccess = False
@@ -354,7 +366,7 @@ while playing and player.alive:
                     else:
                         if player.speed > p.speed:
                             clear()
-                            print("You have successfully run away!")
+                            print("You have successfully run away from " + p.name + "!")
                             print()
                             input("Press enter to continue...")
                             player.goDirection(commandWords[1]) 
@@ -363,15 +375,27 @@ while playing and player.alive:
                             clear()
                             print("You can not run away...")
                             print()
+                            if p.speed > player.speed:
+                                p.attack(player)
+                            else:
+                                player.chanceDodge(p)
+                            print()
                             input("Press enter to continue...")
-                            commandSuccess = False
                 else:
-                    player.goDirection(commandWords[1])
-                    timePasses = True
+                    go = player.goDirection(commandWords[1])
+                    if go == False:
+                        print("Enter a valid direction.")
+                        commandSuccess = False
+                    else:
+                        timePasses = True
             # same as "go (direction)"
             else:
-                player.goDirection(commandWords[1])
-                timePasses = True
+                go = player.goDirection(commandWords[1])
+                if go == False:
+                    print("Enter a valid direction.")
+                    commandSuccess = False
+                else:
+                    timePasses = True
         elif commandWords[0].lower() == "wait" or commandWords[0].lower() == "w":
             timePasses = True   
         else:

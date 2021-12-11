@@ -27,9 +27,14 @@ class Player:
         self.currInv = 0
         self.acquisitions = 0
     def goDirection(self, direction):
-        self.location = self.location.getDestination(direction)
+        loc = self.location.getDestination(direction)
+        if loc != False:
+            self.location = loc
+        else:
+            return False
     def pickup(self, item):
         self.items.append(item)
+        self.currInv += 1
         item.loc = self
         self.location.removeItem(item)
     def drop(self, item):
@@ -42,6 +47,7 @@ class Player:
         if self.money >= item.price:
             self.pickup(item)
             self.money -= item.price
+            self.currInv += 1
             print("You bought " + item.name + "!")
         else:
             print("Not enough money.")
@@ -68,6 +74,7 @@ class Player:
         self.drop(item)
         self.money += item.sellPrice
         print("You sold " + item.name + " for $" + str(item.sellPrice) + ".")
+        item.sellPrice = round(item.price * 0.75, 2)
         print()
         input("Press enter to continue...")
 
@@ -111,7 +118,7 @@ class Player:
             s += " (Heal " + str(item.healing) + " HP)"
         elif type(item) == Disguise:
             s += " (Disguise)"
-        s += " [$" + str(item.price) + "]"
+        s += " [$" + str(item.sellPrice) + "]"
         return s
 
     def showInventory(self):
@@ -174,18 +181,20 @@ class Player:
         print()
         input("Press enter to exit the game...")
     def losingScreen(self):
+        print()
         print("Final stats:")
         # show acquisitions and money and equipment and stats
         print()
         input("Press enter to continue...")
     def winningScreen(self):
+        print()
         print("You acquired all of the stores and beat the game!")
         print("You now rule over the city!")
         print()
         self.losingScreen()
     def die(self):
-        print("You died.")
         print()
+        print("You died.")
         self.losingScreen()
         self.alive = False
     def lose(self):
@@ -298,12 +307,12 @@ class Player:
         else:
             print(person.name + " noticed!")
             print()
-            person.engaged = True
-            person.scared = False
-            if person not in self.engagedWith:
-                self.engagedWith.append(person)
             # fighting ensues
-            if random.uniform(0.0,1.0) <= person.anger:
+            if random.random() <= person.anger:
+                person.engaged = True
+                person.scared = False
+                if person not in self.engagedWith:
+                    self.engagedWith.append(person)
                 # if their speed is higher
                 if person.speed > self.speed:
                     person.attack(self)
@@ -319,9 +328,13 @@ class Player:
                     enforcer = random.choice(allEnforcers)
                     allEnforcers.remove(enforcer)
                 else:
-                    enforcer = enf0
-                enforcer.room.addPerson(enforcer)
-                enforcer.onMap = True
+                    enforcer = Enforcer("Trooper", random.choice(allRooms), random.sample(enforcer_items, random.randint(1,3)))
+                # enforcer.room.addPerson(enforcer)
+                # for testing
+                enforcer.room = self.location
+                self.location.addPerson(enforcer)
+                updater.register(enforcer)
+                self.engagedWith.append(enforcer)
         print()
         input("Press enter to continue...")
 
@@ -359,26 +372,26 @@ class Player:
     def unequip(self, item):
         clear()
         if self.currInv < self.maxInv:
-            if type(item) == Clothes and self.clothes != None:
+            if type(item) == Clothes:
                 self.clothes = None
                 self.currInv += 1
                 self.health -= item.health
                 self.maxHealth -= item.health
                 self.items.append(item)
                 print("You took off " + item.name + " (-" + str(item.health) + " HP)")
-            elif type(item) == Shoes and self.shoes != None:
+            elif type(item) == Shoes:
                 self.shoes = None
                 self.currInv += 1
                 self.speed -= item.speed
                 self.items.append(item)
-                print("You took off " + item.name + " (-" + str(item.health) + " EVA)")
-            elif type(item) == Weapon and self.weapon == None:
+                print("You took off " + item.name + " (-" + str(item.speed) + " EVA)")
+            elif type(item) == Weapon:
                 self.weapon = None
                 self.currInv += 1
                 self.damage -= item.damage
                 self.items.append(item)
                 print("You took off " + item.name + " (-" + str(item.damage) + " DMG)")
-            elif type(item) == Disguise and self.disguise != None:
+            elif type(item) == Disguise:
                 self.disguise = None
                 self.currInv += 1
                 self.items.append(item)
@@ -395,12 +408,18 @@ class Player:
         return False
 
     def getEquippedByName(self, name):
-        if name.lower() == self.clothes.name.lower():
-            return self.clothes
-        elif name.lower() == self.shoes.name.lower():
-            return self.shoes
-        elif name.lower() == self.disguise.name.lower():
-            return self.disguise
+        if self.clothes != None:
+            if name.lower() == self.clothes.name.lower():
+                return self.clothes
+        if self.shoes != None:
+            if name.lower() == self.shoes.name.lower():
+                return self.shoes
+        if self.disguise != None:
+            if name.lower() == self.disguise.name.lower():
+                return self.disguise
+        if self.weapon != None:
+            if name.lower() == self.weapon.name.lower():
+                return self.weapon
         return False
 
     def eat(self, item):

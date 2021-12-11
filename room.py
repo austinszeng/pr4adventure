@@ -12,6 +12,7 @@ class Room:
         for e in self.exits:
             if e[0] == direction:
                 return e[1]
+        return False
     def connectRooms(room1, dir1, room2, dir2):
         #creates "dir1" exit from room1 to room2 and vice versa
         room1.addExit(dir1, room2)
@@ -46,7 +47,7 @@ class Room:
 class Store(Room):
     def __init__(self, description, acquisition):
         Room.__init__(self, description)
-        r = round(random.uniform(acquisition - acquisition/4, acquisition + acquisition/4))
+        r = round(random.uniform(acquisition - acquisition/5, acquisition + acquisition/5))
         self.acquisition = r
         self.acquired = False
     def displayItems(self):
