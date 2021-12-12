@@ -57,33 +57,41 @@ def printSituation():
 def showHelp():
     clear()
     print("go <direction> -- moves you in the given direction")
-    print("me -- shows stats")
+    print("me -- shows current stats and equipment")
     print("(i)nventory -- opens your inventory")
-    print("pickup <item> -- picks up the item")
-    print("drop <item> -- drop item from inventory")
-    print("equip <item> -- equip an equippable item from inventory")
-    print("unequip <item> -- unequip equipped item")
-    print("inspect <item> -- displays what the item is with its attached " + "\n" + 
-          "                  attributes compared to your equipment and sell price.")
-    print("run <direction> -- if engaged")
-    print("buy <item> -- buy item from store")
-    print("acquire -- buy store")
-    print("sell <item> -- sell item to store")
+    print("pickup <item> -- picks up an item in your room")
+    print("drop <item> -- drop an item from your inventory")
+    print("equip <item> -- equip an item from your inventory")
+    print("unequip <item> -- unequip an equipped item")
+    print("inspect <item> -- displays item description, attributes compared to your equipment, and sell price.")
+    print("run <direction> -- attempts to run away from the fastest engaged person in your room")
+    print("buy <item> -- buy an item from the store")
+    print("acquire -- acquire/ buy the store in your location")
+    print("sell <item> -- sell an item from your inventory to the store")
     print("wait -- wait a turn in same location")
-    print("eat <item> -- eat a eatable item to gain health")
-    print("pickpocket <person> -- chance to successfully steal an item")
-    print("attack <person> -- attack")
+    print("eat <item> -- eat an \"eatable\" item to gain health")
+    print("pickpocket <person> -- chance to successfully steal an item from a person")
+    print("attack <person> -- attack a person")
     print()
     input("Press enter to continue...")
 
 clear()
-print("Welcome to Blah blah!")
+print("Welcome to The Ginseng Projects!")
+print()
+print("The Ginseng Projects is a small neighborhood where you are a bandit and your goal" + "\n" \
+    "is to either acquire all of the stores in the neighborhood to become the neighborhood's " + "\n" \
+    "leader or to kill all of its inhabitants. Regardless of the path you choose, you will" + "\n" \
+    "have to pickpocket those you come across and possibly attack/ kill them for their items" + "\n" \
+    "and money. However, both of these actions can cause people to either fight back if" + "\n" \
+    "they're having a rough day or call an enforcer to the neighborhood if you scare them." + "\n" \
+    "With the items and money, you can buy items from/ sell items to stores. Good luck!")
 print()
 input("Press enter to continue...")
 clear()
-print("1. Balance")
-print("2. Speed")
-print("3. Brawn")
+print("1. Balance (Healthy balance of all traits)")
+print("2. Speed (Prioritize speed and cunning)")
+print("3. Brawn (Prioritize health and damage)")
+print()
 acceptableInputs = ["1","2","3"]
 choice = input("Which bandit would you like to be (1, 2, 3)? ")
 while choice not in acceptableInputs:
@@ -116,60 +124,52 @@ while playing and player.alive:
                 break
         commandWords = command.split()
         if commandWords[0].lower() == "go":   #cannot handle multi-word directions
-            if player.location.hasPersons():
-                # find mad persons in room
-                important = []
-                for i in player.location.persons:
-                    if i in player.engagedWith:
-                        important.append(i)
-                # check if enforcer is in room
-                if important != []:
-                    hasEnforcer = False
-                    for person in important:
-                        if type(person) == Enforcer:
-                            hasEnforcer = True
-                    if hasEnforcer == True:
-                        # disguise is used up if you pass an enforcer
-                        if player.disguise != None:
-                            clear()
-                            print("You walk past enforcer " + person.name + " but your " \
-                                + player.disguise.name + " is gone now.")
-                            print()
-                            input("Press enter to continue...")
-                            player.disguise = None
-                            player.goDirection(commandWords[1])
-                            timePasses = True
-                        # if no disguise
-                        else:
-                            print("You can not do that right now.")
-                            commandSuccess = False
-                    # if no enforcers
-                    else:
-                        # disguise protects against normal people
-                        if player.disguise != None:
-                            go = player.goDirection(commandWords[1])
-                            if go == False:
-                                print("Enter a valid direction.")
-                                commandSuccess = False
-                            else:
-                                timePasses = True
-                        else:
-                            print("You can't do that right now.")
-                            commandSuccess = False
-                # if no mad people
-                else:
-                    go = player.goDirection(commandWords[1])
-                    if go == False:
-                        print("Enter a valid direction.")
-                        commandSuccess = False
-                    else:
-                        timePasses = True
+            if player.testGoDirection == False:
+                print("Enter a valid direction.")
+                commandSuccess = False
             else:
-                go = player.goDirection(commandWords[1])
-                if go == False:
-                    print("Enter a valid direction.")
-                    commandSuccess = False
+                if player.location.hasPersons():
+                    # find mad persons in room
+                    important = []
+                    for i in player.location.persons:
+                        if i in player.engagedWith:
+                            important.append(i)
+                    # check if enforcer is in room
+                    if important != []:
+                        hasEnforcer = False
+                        for person in important:
+                            if type(person) == Enforcer:
+                                hasEnforcer = True
+                        if hasEnforcer == True:
+                            # disguise is used up if you pass an enforcer
+                            if player.disguise != None:
+                                clear()
+                                print("You walk past enforcer " + person.name + " but your " \
+                                    + player.disguise.name + " is gone now.")
+                                print()
+                                input("Press enter to continue...")
+                                player.disguise = None
+                                player.goDirection(commandWords[1])
+                                timePasses = True
+                            # if no disguise
+                            else:
+                                print("You can not do that right now.")
+                                commandSuccess = False
+                        # if no enforcers
+                        else:
+                            # disguise protects against normal people
+                            if player.disguise != None:
+                                player.goDirection(commandWords[1])
+                                timePasses = True
+                            else:
+                                print("You can't do that right now.")
+                                commandSuccess = False
+                    # if no mad people
+                    else:
+                        player.goDirection(commandWords[1])
+                        timePasses = True
                 else:
+                    player.goDirection(commandWords[1])
                     timePasses = True
 
         elif commandWords[0].lower() == "pickup":  #can handle multi-word objects
@@ -301,7 +301,8 @@ while playing and player.alive:
                 else:
                     print("No such item.")
                     commandSuccess = False
-        elif commandWords[0].lower() == "inventory" or commandWords[0].lower() == "i":
+        elif commandWords[0].lower() == "inventory" or commandWords[0].lower() == "i" or \
+            commandWords[0].lower == "inv":
             player.showInventory()        
         elif commandWords[0].lower() == "me":
             player.showStats()

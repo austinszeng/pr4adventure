@@ -254,6 +254,7 @@ class Player:
         if person.health - dmg > 0:
             person.health -= dmg
         else:
+            self.money += person.money
             person.die()
     def chanceDodge(self, person):
         # percent chance to dodge based on speed
@@ -346,6 +347,7 @@ class Player:
                 else:
                     if person.money != 0:
                         print("You took $" + str(person.money) + " from " + person.name + "!")
+                        self.money += person.money
                         person.money = 0
                         self.increaseCunning()
                     # if no money cuz already pickpocketed, then get $0
@@ -364,6 +366,7 @@ class Player:
                 else:
                     if person.money != 0:
                         print("You took $" + str(person.money) + " from " + person.name + "!")
+                        self.money += person.money
                         person.money = 0
                         self.increaseCunning()
                     # if no money cuz already pickpocketed, then get $0

@@ -1,7 +1,7 @@
-# Blah Blah
-## Blah Blah is a game where you are a bandit roaming the streets and pickpocket items/ money from people or stores and sell these stolen goods to stores to make money to buy items and acquire stores. To win the game, acquire all the stores. However, each time you pickpocket, there comes a risk of being seen or caught. You may have to deal with the police and/ or being attacked. 
+# CSCI121 Adventure Final Project: The Ginseng Projects 
+## The Ginseng Projects is a text-based adventure game where you are a bandit roaming the neighborhood and your goal is to either acquire all of the stores in the neighborhood to become the Ginseng Projects' leader or to kill all of its inhabitants. Regardless of the path you choose, you will have to pickpocket those that you come across and possibly attack/ kill them for their items and money. However, both of these actions can cause people to either fight back if they're having a rough day or call an enforcer to the neighborhood if you scare them. With the items and money you took from people or found lying on the ground, you can buy items from stores or sell your items for more money.
 
-# Improvements (Current: 40 points):
+# Improvements (Total: 40 points):
 ## "me" command (2 points)
 - Added showStats method in Player to show current status and equipment
 ## "inspect" command (2 points)
@@ -35,16 +35,9 @@
 ## victory condition (3 points)
 - To win, the player can acquire all 4 stores on the map or kill all of the people on the map (including any added enforcers)
 
-## Bugs:
-- win condition acquisitions (checked and works)
-- win condition people left (not checked)
+# Notes :
+- Pickpocketing and attacking both have risks of adding an enforcer to the map during the first encounter if the person notices and gets scared. However, the same person cannot call an enforcer on the map twice. Subsequent pickpockets where the person notices or subsequent attacks cause the person to either stay scared or they have a chance to get mad and be engaged instead. Once engaged, they stay engaged.
 
-## Notes :
-- variables names are really sensitive due to the way i'm using inheritance with misc.py
-- when person dies in store, the items go to the store (maybe this is a mechanic though where you shouldn't kill in stores)
-- make it so you can't pickpocket when someone is engaged in the room?
-- pickpocketing and attacking both have risks of adding an enforcer to the map during the first encounter if the person notices and gets scared. However, the same person cannot call an enforcer on the map twice. They either stay scared are they have a chance to get mad and be engaged instead. Once engaged, they stay engaged
-
-## Ideas:
+# Ideas:
 - after all of this, need to balance the game (e.g. running away is way too easy rn)
 - maybe make stealing money more complicated and don't make it all go away with one swipe? add money that merchant makes from store to merchant's money?

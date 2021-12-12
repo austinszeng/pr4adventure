@@ -28,6 +28,7 @@ class Person:
         room.addPerson(self)
     def die(self):
         print(self.name + " has been killed...their items and blood are spilled on the ground.")
+        print("You quickly pick up their $" + str(self.money) + " before it gets soaked.")
         for i in self.items:
             self.room.addItem(i)       
         self.room.removePerson(self)
