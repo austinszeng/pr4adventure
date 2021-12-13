@@ -53,7 +53,6 @@ class Player:
         if self.money >= item.price:
             self.pickup(item)
             self.money -= item.price
-            self.currInv += 1
             print("You bought " + item.name + "!")
         else:
             print("Not enough money.")
@@ -155,6 +154,14 @@ class Player:
         clear()
         print("Stats:")
         print()
+        print("Acquisitions: " + str(self.acquisitions) + "/" + str(4))
+        peopleLeft = 0
+        for room in allRooms:
+            if room.hasPersons():
+                peopleLeft += len(room.persons)
+        # since there are always 20 people + len(enforcersAdded)
+        print("People left: " + str(peopleLeft) + "/" + str(20 + len(enforcersAdded)) )
+        print()
         print("Health: " + str(self.health) + "/" + str(self.maxHealth))
         print("Regen: " + str(self.regen))
         print("Money: $" + str(self.money))
@@ -248,7 +255,7 @@ class Player:
         self.winningScreen()
         self.alive = False
     def attack(self, person):
-        variability = 5
+        variability = self.damage // 5
         dmg = random.randint(self.damage - variability, self.damage + variability) 
         print("You attack " + person.name + " for " + str(dmg) + " damage.")
         if person.health - dmg > 0:

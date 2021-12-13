@@ -9,7 +9,7 @@ def charChoice(choice):
     # Player (health, regen, damage, speed, cunning):
     player = None
     player1 = Player(125, 5, 20, 50, 10) # balance
-    player2 = Player(100, 5, 15, 60, 15) # focus more on speed and cunning
+    player2 = Player(110, 5, 15, 60, 15) # focus more on speed and cunning
     player3 = Player(150, 10, 25, 40, 5) # brute
     if choice == "1":
         player = player1

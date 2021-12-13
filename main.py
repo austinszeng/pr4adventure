@@ -274,15 +274,15 @@ while playing and player.alive:
                         madPerson = True
             if madPerson == False:
                 if target != False:
-                    if type(target.loc) == Room:
-                        print("This room is not a store.")
-                        commandSuccess = False
-                    else:
+                    if type(player.location) == Store:
                         if player.location.acquired == False:
                             player.sell(target)
                         else:
                             print("You can't sell items to your own store.")
                             commandSuccess = False
+                    else:
+                        print("This room is not a store.")
+                        commandSuccess = False
                 else:
                     print("No such item in inventory.")
                     commandSuccess = False
