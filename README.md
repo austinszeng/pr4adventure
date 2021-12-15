@@ -1,5 +1,5 @@
 # CSCI121 Adventure Final Project: The Ginseng Projects 
-## The Ginseng Projects is a text-based adventure game where you are a bandit roaming the neighborhood and your goal is to either acquire all of the stores in the neighborhood through pickpocketing/ killing for money and items to become the Ginseng Projects' leader or to eliminate all of its inhabitants.
+## The Ginseng Projects is a text-based adventure game where you are a bandit roaming the neighborhood and your goal is to either acquire all of the stores in the neighborhood through pickpocketing/ killing for money and items to become the Ginseng Projects' leader, or to eliminate all of its inhabitants.
 
 # Improvements (Total: 40 points):
 ## "me" command (2 points)
@@ -19,7 +19,7 @@
 ## more monsters (3 points)
 - There are normal people, merchants, and enforcers. Both Merchant and Enforcer classes inherit from Person and have altered levels of health, attentiveness, speed, anger, etc. The higher the anger, the more likely the person is to fight back rather than call an enforcer. If their speed is higher than the player's, then the player is more unlikely to be able to run away. Merchants can't move away from their store.
 ## player attributes (3 points)
-- Added damage, speed, and cunning attributes. A higher cunning value increases the success rate of pickpocketing and a higher speed value increases the success rate of running away and allows the player to attack first and be able to have a chance to dodge an opponent's attacks when fighting.
+- Added damage, speed, and cunning attributes. A higher cunning value increases the success rate of pickpocketing and a higher speed value increases the success rate of running away and allows the player to attack first and be able to have a chance to dodge an opponent's attack when fighting.
 ## weapons and armor (4 points)
 - Added Weapon, Clothes, Shoes, and Disguise classes that all inherit from item. Respectively, they increase player damage, player health, and player speed when equipped. When an item of the Disguise class is equipped, it allows the player to be able to move freely away from all types of people regardless of if they are engaged, but the Disguise item is used up if used to move away from an Enforcer.
 ## bigger world (2 points)
@@ -37,6 +37,3 @@
 
 # Notes :
 - Pickpocketing and attacking both have risks of adding an enforcer to the map during the first encounter if the person notices and gets scared. However, the same person cannot call an enforcer on the map twice. Subsequent pickpockets where the person notices or subsequent attacks cause the person to either stay scared or they have a chance to get mad and be engaged instead. Once engaged, they stay engaged.
-
-# Ideas:
-- maybe make stealing money more complicated and don't make it all go away with one swipe? add money that merchant makes from store to merchant's money?
