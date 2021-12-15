@@ -63,15 +63,16 @@ def showHelp():
     print("drop <item> -- drop an item from your inventory")
     print("equip <item> -- equip an item from your inventory")
     print("unequip <item> -- unequip an equipped item")
-    print("inspect <item> -- displays item description, attributes compared to your equipment, and sell price.")
+    print("inspect <item> -- displays an item's description, its given attribute compared to your equipment, and its sell price.")
     print("run <direction> -- attempts to run away from the fastest engaged person in your room")
-    print("buy <item> -- buy an item from the store")
-    print("acquire -- acquire/ buy the store in your location")
+    print("buy <item> -- buy an item from a store")
+    print("acquire -- acquire the store in your location")
     print("sell <item> -- sell an item from your inventory to the store")
     print("wait -- wait a turn in same location")
     print("eat <item> -- eat an \"eatable\" item to gain health")
-    print("pickpocket <person> -- chance to successfully steal an item from a person")
+    print("pickpocket <person> -- chance to successfully steal money/ an item from a person")
     print("attack <person> -- attack a person")
+    print("exit -- to exit the game early :(")
     print()
     input("Press enter to continue...")
 
@@ -84,7 +85,8 @@ print("The Ginseng Projects is a small neighborhood where you are a bandit and y
     "have to pickpocket those you come across and possibly attack/ kill them for their items" + "\n" \
     "and money. However, both of these actions can cause people to either fight back if" + "\n" \
     "they're having a rough day or call an enforcer to the neighborhood if you scare them." + "\n" \
-    "With the items and money, you can buy items from/ sell items to stores. Good luck!")
+    "With the items and money you find in rooms or pickpocket from people, you can buy items" + "\n" \
+    "(or pickpocket them) from stores or sell your items to make money. Good luck!")
 print()
 input("Press enter to continue...")
 clear()

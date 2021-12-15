@@ -291,11 +291,8 @@ class Player:
             allEnforcers.remove(enforcer)
         else:
             enforcer = Enforcer("Trooper", random.choice(allRooms), random.sample(enforcer_items, random.randint(1,3)))
-        # enforcer.room.addPerson(enforcer)
-        # for testing
+        enforcer.room.addPerson(enforcer)
         enforcersAdded.append(enforcer)
-        enforcer.room = self.location
-        self.location.addPerson(enforcer)
         updater.register(enforcer)
         self.engagedWith.append(enforcer)
     def attackPerson(self, person):
@@ -339,7 +336,7 @@ class Player:
         print("You are pickpocketing " + person.name)
         print()
         # successful --> steal an item from them
-        if random.uniform(0.0,1.0) + ((self.cunning/100)/2) > person.attentive and person.engaged == False:
+        if random.uniform(0.0,1.0) + ((self.cunning/100)/2) > person.attentive:
             # random chance to either steal an item or take their money
             n = random.randint(1,4)
             if person.items != [] and self.currInv < self.maxInv:
